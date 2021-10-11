@@ -5,7 +5,9 @@
         <p class="titulo-autocomplete">Filtrar por:</p>
       </v-col>
       <v-col>
-        <p class="titulo-autocomplete" v-show="tipoFiltroSelecionado">{{ tipoFiltroSelecionado }}</p>
+        <p class="titulo-autocomplete" v-show="tipoFiltroSelecionado">
+          {{ tipoFiltroSelecionado }}
+        </p>
       </v-col>
       <v-col></v-col>
     </v-row>
@@ -49,8 +51,7 @@
 </template>
 
 <script>
-
-import axios from 'axios'
+import axios from "axios";
 
 export default {
   data() {
@@ -64,7 +65,7 @@ export default {
         { regiao_ptbr: "Américas", region_en: "Americas" },
         { regiao_ptbr: "Ásia", region_en: "Asia" },
         { regiao_ptbr: "Europa", region_en: "Europe" },
-        { regiao_ptbr: "Oceania", region_en: "Oceania" },
+        { regiao_ptbr: "Oceania", region_en: "Oceania" }
       ],
 
       todasCapitais: [],
@@ -74,7 +75,7 @@ export default {
 
       // Valores selecionados nos autocompletes
       tipoFiltroSelecionado: "",
-      filtroSelecionado: "",
+      filtroSelecionado: ""
     };
   },
 
@@ -82,23 +83,22 @@ export default {
     filtro() {
       // Preenche os dados do segundo autocomplete (filtro) de acordo com o selecionado no primeiro autocomplete
       if (this.tipoFiltroSelecionado == "Região") {
-        return this.todasRegioes.map((a) => a.regiao_ptbr);
+        return this.todasRegioes.map(a => a.regiao_ptbr);
       } else if (this.tipoFiltroSelecionado == "Capital") {
         return this.todasCapitais;
       } else if (this.tipoFiltroSelecionado == "Língua") {
-        return this.todosIdiomas.map((idioma) => idioma.name).sort();
+        return this.todosIdiomas.map(idioma => idioma.name).sort();
       } else if (this.tipoFiltroSelecionado == "País") {
-        return this.todosPaises.map((pais) => pais.name).sort();
+        return this.todosPaises.map(pais => pais.name).sort();
       } else if (this.tipoFiltroSelecionado == "Código de ligação") {
         return this.todosCodigosLigacao;
       } else {
         return [""];
       }
-    },
+    }
   },
 
   methods: {
-
     async pesquisarPaises() {
       // Descr: Acoes executadas apos o clique do botao pesquisar
 
@@ -111,7 +111,7 @@ export default {
         case "Região":
           // Obtem a regiao selecionada em ingles para uso da api
           var regiaoSelecionada_ingles = Object.values(
-            this.todasRegioes.filter((obj) => {
+            this.todasRegioes.filter(obj => {
               return obj.regiao_ptbr == arg;
             })[0]
           )[1];
@@ -128,23 +128,21 @@ export default {
         case "Língua":
           // Converter para idioma na iso369_1
           var idioma_iso3691 = Object.values(
-            this.todosIdiomas.filter((obj) => {
+            this.todosIdiomas.filter(obj => {
               return obj.name == arg;
             })[0]
           )[0];
-          url =
-            "https://restcountries.com/v2/lang/" + idioma_iso3691 + filtros;
+          url = "https://restcountries.com/v2/lang/" + idioma_iso3691 + filtros;
           break;
 
         case "País":
           // Converte país em ptbr para codigo alpha3code
           var codigoPais = Object.values(
-            this.todosPaises.filter((obj) => {
+            this.todosPaises.filter(obj => {
               return obj.name == arg;
             })[0]
           )[1];
-          url =
-            "https://restcountries.com/v2/alpha/" + codigoPais + filtros;
+          url = "https://restcountries.com/v2/alpha/" + codigoPais + filtros;
           break;
 
         case "Código de ligação":
@@ -159,13 +157,20 @@ export default {
         this.paisesFiltrados = [this.paisesFiltrados];
       }
 
+      // Salva configuracoes de pesquisa na store
+      this.$store.dispatch("saveSearchOptions", {
+        filtrarPor: this.tipoFiltroSelecionado,
+        filtro: this.filtroSelecionado,
+        loadedCountries: this.paisesFiltrados
+      });
+
       // Retorna os dados para o parent
       this.$emit("retornandoPaisesFiltrados", this.paisesFiltrados);
     },
 
     async requestAPI(url) {
       return (await axios.get(url)).data;
-    },
+    }
   },
 
   created() {
@@ -173,39 +178,46 @@ export default {
 
     let url =
       "https://restcountries.com/v2/all?fields=name,capital,languages,callingCodes,alpha3Code,translations";
-    this.requestAPI(url).then((resposta) => {
+    this.requestAPI(url).then(resposta => {
       // Todas capitais
       this.todasCapitais = resposta
-        .map((pais) => pais.capital)
-        .filter((item) => item)
+        .map(pais => pais.capital)
+        .filter(item => item)
         .sort();
 
       // Todos codigos de ligacao
       let codigosLigacao = resposta
-        .map((pais) => pais.callingCodes)
+        .map(pais => pais.callingCodes)
         .flat()
-        .filter((item) => item)
+        .filter(item => item)
         .sort();
       this.todosCodigosLigacao = [...new Set(codigosLigacao)];
 
       // Todos idiomas (array of objects -> contendo nome e codigo de busca)
-      let obj_idiomas = resposta.map((pais) => pais.languages).flat();
+      let obj_idiomas = resposta.map(pais => pais.languages).flat();
       // Removendo duplicatas
       this.todosIdiomas = [
-        ...new Map(obj_idiomas.map((item) => [item.iso639_1, item])).values(),
+        ...new Map(obj_idiomas.map(item => [item.iso639_1, item])).values()
       ];
 
       // Todos paises (array of objects  -> contendo nome ptbr e codigo de busca)
-      let list_nomePaises = resposta.map((pais) => pais.translations.pt).flat();
-      let list_alpha3code = resposta.map((pais) => pais.alpha3Code).flat();
+      let list_nomePaises = resposta.map(pais => pais.translations.pt).flat();
+      let list_alpha3code = resposta.map(pais => pais.alpha3Code).flat();
       for (var i of Array(list_nomePaises.length).keys()) {
         this.todosPaises.push({
           name: list_nomePaises[i],
-          code: list_alpha3code[i],
+          code: list_alpha3code[i]
         });
       }
     });
-  },
+
+    // Ao inicializar, busca se existem dados de pesquisa salvos na store, se sim, os carrega
+    if (this.$store.state.searchOptions.filtrarPor) {
+      this.tipoFiltroSelecionado = this.$store.state.searchOptions.filtrarPor;
+      this.filtroSelecionado = this.$store.state.searchOptions.filtro;
+      this.$emit("retornandoPaisesFiltrados", this.$store.state.loadedCountries);
+    }
+  }
 };
 </script>
 
@@ -223,7 +235,7 @@ export default {
 }
 
 .titulo-autocomplete {
-  color: #6D2080 !important;
+  color: #6d2080 !important;
   margin-bottom: 0px;
   padding-bottom: 0px;
   height: 100%;
@@ -235,7 +247,8 @@ export default {
 }
 
 /* Transicao fade segundo autocomplete (filtro)*/
-.autocomplete_filtro-enter, .autocomplete_filtro-leave-active {
+.autocomplete_filtro-enter,
+.autocomplete_filtro-leave-active {
   opacity: 0;
 }
 
