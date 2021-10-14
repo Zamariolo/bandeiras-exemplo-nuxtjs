@@ -20,6 +20,7 @@
           rounded
           v-bind:items="tipoFiltros"
           v-model="tipoFiltroSelecionado"
+          id='autocomplete_tipoFiltro'
         ></v-autocomplete>
       </v-col>
       <v-col>
@@ -31,6 +32,7 @@
             v-bind:items="filtro"
             v-show="tipoFiltroSelecionado"
             v-model="filtroSelecionado"
+            id='autocomplete_filtro'
           ></v-autocomplete>
         </transition>
       </v-col>
