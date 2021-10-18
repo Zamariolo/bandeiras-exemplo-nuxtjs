@@ -65,10 +65,10 @@
     >
 
     <div class="painel-paises-vizinhos">
-      <Bandeira
+      <ListaBandeiras
         v-bind:paises="paisesVizinhosPagination"
         @paisSelecionado="abreInfoPais"
-      ></Bandeira>
+      ></ListaBandeiras>
     </div>
 
     <div class="painel-pagination" v-show="showPagination">
@@ -83,12 +83,12 @@
 </template>
 
 <script>
-import Bandeira from "@/components/Bandeira/Bandeira.vue";
+import ListaBandeiras from "@/components/ListaBandeiras/ListaBandeiras.vue";
 import axios from "axios";
 
 export default {
   components: {
-    Bandeira
+    ListaBandeiras
   },
 
   data() {

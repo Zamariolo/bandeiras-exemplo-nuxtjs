@@ -1,4 +1,4 @@
-import Bandeira from "@/components/Bandeira/Bandeira";
+import ListaBandeiras from "@/components/ListaBandeiras/ListaBandeiras";
 import { mount } from "@vue/test-utils";
 
 const dadosBandeira = [
@@ -9,14 +9,14 @@ const dadosBandeira = [
 
 describe("Recebendo e carregando as bandeiras", () => {
   test("Exibindo o numero correto de bandeiras", () => {
-    const wrapper = mount(Bandeira, { propsData: { paises: dadosBandeira } });
+    const wrapper = mount(ListaBandeiras, { propsData: { paises: dadosBandeira } });
     const qntdPropsExibidos = wrapper.findAll("img").length;
     const qntdPropsEsperados = dadosBandeira.length;
 
     expect(qntdPropsEsperados).toBe(qntdPropsExibidos);
   }),
     test("Verificando se todas bandeiras receberam props src e alt", () => {
-      const wrapper = mount(Bandeira, { propsData: { paises: dadosBandeira } });
+      const wrapper = mount(ListaBandeiras, { propsData: { paises: dadosBandeira } });
       const paises = wrapper.findAll(".bandeira").wrappers;
 
       for (var i of [...Array(dadosBandeira.length).keys()]) {
@@ -28,14 +28,13 @@ describe("Recebendo e carregando as bandeiras", () => {
 
 describe("Funcionalidades do clique", () => {
   test("Numero de emits enviados corretos", () => {
-    const wrapper = mount(Bandeira, { propsData: { paises: dadosBandeira } });
+    const wrapper = mount(ListaBandeiras, { propsData: { paises: dadosBandeira } });
     const bandeiras = wrapper.findAll(".bandeira").wrappers;
 
     for (var i of [...Array(dadosBandeira.length).keys()]) {
       bandeiras[i].trigger("click");
     }
 
-    //wrapper.vm.$nextTick();
     const qntdCliquesEsperados = dadosBandeira.length;
 
     const qntdCliques = wrapper.emitted().paisSelecionado.length;
@@ -43,7 +42,7 @@ describe("Funcionalidades do clique", () => {
   });
 
   test("Enviando os argumentos corretos no emit", () => {
-    const wrapper = mount(Bandeira, { propsData: { paises: dadosBandeira } });
+    const wrapper = mount(ListaBandeiras, { propsData: { paises: dadosBandeira } });
     const bandeiras = wrapper.findAll(".bandeira").wrappers;
 
     for (var i of [...Array(dadosBandeira.length).keys()]) {
