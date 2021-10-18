@@ -1,13 +1,17 @@
+//Fundamentals
 import { shallowMount, createLocalVue } from "@vue/test-utils";
 import Vuex from "vuex";
 import Vuetify from "vuetify";
-
+//Axios
+import axios from "axios";
+import flushPromises from "flush-promises";
+//Componentes
 import BarraPesquisa from "@/components/BarraPesquisa/BarraPesquisa";
 
-import axios from "axios";
-jest.mock("axios");
+//Resposta fake para inicializacao do componente
 import { initialResponse } from "./mockResponse";
-let mockResponse = initialResponse;
+let createdMockResponse = initialResponse;
+jest.mock("axios");
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -24,7 +28,7 @@ beforeEach(() => {
   // Montando a vuex store
   state = {
     searchOptions: () => {
-      let retorno = { filtrarPor: "Região", filtro: "Africa" };
+      let retorno = { filtrarPor: "", filtro: "" };
       return retorno;
     }
   };
@@ -36,11 +40,16 @@ beforeEach(() => {
     actions,
     state
   });
+
+  // Axios mock initial response
+  axios.get.mockResolvedValue({ data: createdMockResponse });
 });
+
+afterEach(() => {});
 
 describe("Inicializando a barra de pesquisa", () => {
   test("Testa comportamento de mostra/esconde do autocomplete filtro", async () => {
-    // Descr: Uma vez que o primeiro filtro (filtrarPor) possui dados, o segundo autocomplete (filtro) é exibido
+    //axios.get.mockResolvedValue({ data: createdMockResponse });
 
     const wrapper = shallowMount(BarraPesquisa, { store, localVue });
     const filtro = wrapper.find("#autocomplete_filtro");
@@ -57,6 +66,8 @@ describe("Inicializando a barra de pesquisa", () => {
     expect(filtro.isVisible()).toBe(false);
   }),
     test("Verifica se o primeiro autocomplete possua os dados para popular", async () => {
+      //axios.get.mockResolvedValue({ data: createdMockResponse });
+
       const wrapper = shallowMount(BarraPesquisa, { store, localVue });
       const autocomplete_tipoFiltro = wrapper.find("#autocomplete_tipoFiltro");
 
@@ -64,12 +75,12 @@ describe("Inicializando a barra de pesquisa", () => {
     });
 });
 
-/*
 describe("Populando autocomplete filtro corretamente", () => {
-  test("Carregando regioes corretamente", () => {
+  test("Carregando regioes corretamente", async () => {
     const tipoFiltro = "Região";
 
-    //axios.get.mockImplementation(() => Promise.resolve({ data: mockResponse }));
+    //axios.get.mockImplementation(() => Promise.resolve({ data: createdMockResponse }));
+    await flushPromises();
 
     const wrapper = shallowMount(BarraPesquisa, {
       store,
@@ -90,43 +101,32 @@ describe("Populando autocomplete filtro corretamente", () => {
     expect(autocomplete_filtro.isVisible()).toBe(true); //Verifica que esta visivel
     expect(valoresExibidos).toEqual(valoresEsperados); // Verifica opcoes de regiao
   });
-  /*
-    test("Carregando capitais corretamente", async () => {
-      const tipoFiltro = "Capital";
 
-      axios.get.mockImplementation(() =>
-        Promise.resolve({ data: mockResponse })
-      );
+  test.only("Carregando capitais corretamente", async () => {
+    const tipoFiltro = "Capital";
 
-      axios.post.mockImplementation(() => {
-        Promise.resolve({});
-      });
-
-      const wrapper = shallowMount(BarraPesquisa, {
-        store,
-        localVue,
-        data() {
-          return { tipoFiltroSelecionado: tipoFiltro };
-        }
-      });
-
-      //await flushPromises();
-      expect(axios.get).toHaveBeenCalledWith(
-        "https://restcountries.com/v2/all?fields=name,capital,languages,callingCodes,alpha3Code,translations"
-      );
-
-      const autocomplete_tipoFiltro = wrapper.find("#autocomplete_tipoFiltro");
-      const autocomplete_filtro = wrapper.find("#autocomplete_filtro");
-
-      wrapper.vm.$nextTick();
-      //const valoresEsperados = wrapper.vm.todasRegioes.map(a => a.regiao_ptbr);
-      //const valoresExibidos = autocomplete_filtro.vm.items;
-
-      // expect(autocomplete_tipoFiltro.vm.value).toMatch(tipoFiltro); // Verifica v-model tipoFiltroSelecionado foi alterado
-      //expect(autocomplete_filtro.isVisible()).toBe(true); //Verifica que esta visivel
-      //expect(valoresExibidos).toEqual(valoresEsperados); // Verifica opcoes de regiao
-
-      //console.log(valoresExibidos);
+    const wrapper = shallowMount(BarraPesquisa, {
+      store,
+      localVue,
+      data() {
+        return { tipoFiltroSelecionado: tipoFiltro };
+      }
     });
+
+    await flushPromises();
+
+    //expect(axios.get).toHaveBeenCalledWith(
+    //"https://restcountries.com/v2/all?fields=name,capital,languages,callingCodes,alpha3Code,translations"
+    // );
+
+    const autocomplete_tipoFiltro = wrapper.find("#autocomplete_tipoFiltro");
+    const autocomplete_filtro = wrapper.find("#autocomplete_filtro");
+
+    const valoresEsperados = wrapper.vm.todasCapitais;
+    const valoresExibidos = autocomplete_filtro.vm.items;
+
+    expect(autocomplete_tipoFiltro.vm.value).toMatch(tipoFiltro); // Verifica v-model tipoFiltroSelecionado foi alterado
+    expect(autocomplete_filtro.isVisible()).toBe(true); //Verifica que esta visivel
+    expect(valoresExibidos).toEqual(valoresEsperados); // Verifica opcoes de regiao
+  });
 });
-*/
