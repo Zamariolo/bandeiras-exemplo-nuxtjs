@@ -12,16 +12,11 @@
 </template>
 
 <script>
-import axios from 'axios'
 
 export default {
   props: ["paises"],
 
   methods: {
-    async requestAPI(url) {
-      return (await axios.get(url)).data;
-    },
-
     retornaCodigoPais(codigoPais) {
       // Envia o codigo iso639-1 do pais selecionado para o componente pai
       this.$emit("paisSelecionado", codigoPais);

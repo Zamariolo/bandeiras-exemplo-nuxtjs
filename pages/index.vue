@@ -16,10 +16,10 @@
     >
 
     <div class="painel-lista-paises">
-      <bandeira
+      <ListaBandeiras
         v-bind:paises="bandeirasMostrar"
         v-on:paisSelecionado="abreInfoPais"
-      ></bandeira>
+      ></ListaBandeiras>
     </div>
 
     <div class="painel-pagination" v-show="showPagination">
@@ -35,12 +35,12 @@
 
 <script>
 import BarraPesquisa from "@/components/BarraPesquisa/BarraPesquisa.vue";
-import Bandeira from "@/components/Bandeira/Bandeira.vue";
+import ListaBandeiras from "@/components/ListaBandeiras/ListaBandeiras.vue";
 
 export default {
   components: {
     BarraPesquisa,
-    Bandeira
+    ListaBandeiras
   },
 
   data() {
