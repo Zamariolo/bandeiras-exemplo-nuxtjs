@@ -20,7 +20,7 @@
           rounded
           v-bind:items="tipoFiltros"
           v-model="tipoFiltroSelecionado"
-          id='autocomplete_tipoFiltro'
+          id="autocomplete_tipoFiltro"
         ></v-autocomplete>
       </v-col>
       <v-col>
@@ -32,7 +32,7 @@
             v-bind:items="filtro"
             v-show="tipoFiltroSelecionado"
             v-model="filtroSelecionado"
-            id='autocomplete_filtro'
+            id="autocomplete_filtro"
           ></v-autocomplete>
         </transition>
       </v-col>
@@ -112,7 +112,7 @@ export default {
       switch (this.tipoFiltroSelecionado) {
         case "Região":
           // Obtem a regiao selecionada em ingles para uso da api
-          var regiaoSelecionada_ingles = Object.values(
+          let regiaoSelecionada_ingles = Object.values(
             this.todasRegioes.filter(obj => {
               return obj.regiao_ptbr == arg;
             })[0]
@@ -129,7 +129,7 @@ export default {
 
         case "Língua":
           // Converter para idioma na iso369_1
-          var idioma_iso3691 = Object.values(
+          let idioma_iso3691 = Object.values(
             this.todosIdiomas.filter(obj => {
               return obj.name == arg;
             })[0]
@@ -139,7 +139,7 @@ export default {
 
         case "País":
           // Converte país em ptbr para codigo alpha3code
-          var codigoPais = Object.values(
+          let codigoPais = Object.values(
             this.todosPaises.filter(obj => {
               return obj.name == arg;
             })[0]
@@ -152,7 +152,7 @@ export default {
           break;
       }
 
-      this.paisesFiltrados = await this.requestAPI(url);
+      this.paisesFiltrados = (await axios.get(url)).data;
 
       // No caso de busca por país, retorna apenas um object e nao um array => padronizar
       if (this.tipoFiltroSelecionado == "País") {
@@ -169,18 +169,17 @@ export default {
       // Retorna os dados para o parent
       this.$emit("retornandoPaisesFiltrados", this.paisesFiltrados);
     },
-
-    async requestAPI(url) {
-      return (await axios.get(url)).data;
-    }
   },
 
-  created() {
+  async created() {
     // A barra de pesquisa ao ser carregada, preenche o autocomplete com os dados
 
     let url =
       "https://restcountries.com/v2/all?fields=name,capital,languages,callingCodes,alpha3Code,translations";
-    this.requestAPI(url).then(resposta => {
+
+    await axios.get(url).then(response => {
+      let resposta = response.data;
+
       // Todas capitais
       this.todasCapitais = resposta
         .map(pais => pais.capital)
@@ -205,7 +204,7 @@ export default {
       // Todos paises (array of objects  -> contendo nome ptbr e codigo de busca)
       let list_nomePaises = resposta.map(pais => pais.translations.pt).flat();
       let list_alpha3code = resposta.map(pais => pais.alpha3Code).flat();
-      for (var i of Array(list_nomePaises.length).keys()) {
+      for (let i of Array(list_nomePaises.length).keys()) {
         this.todosPaises.push({
           name: list_nomePaises[i],
           code: list_alpha3code[i]
@@ -217,7 +216,10 @@ export default {
     if (this.$store.state.searchOptions.filtrarPor) {
       this.tipoFiltroSelecionado = this.$store.state.searchOptions.filtrarPor;
       this.filtroSelecionado = this.$store.state.searchOptions.filtro;
-      this.$emit("retornandoPaisesFiltrados", this.$store.state.loadedCountries);
+      this.$emit(
+        "retornandoPaisesFiltrados",
+        this.$store.state.loadedCountries
+      );
     }
   }
 };

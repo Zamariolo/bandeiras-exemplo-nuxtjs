@@ -124,7 +124,7 @@ export default {
       filtros = "?fields=flag,alpha3Code,name";
       let paisesVizinhos = [];
 
-      for (var codigoPais of this.dadosPaisSelecionado.borders) {
+      for (let codigoPais of this.dadosPaisSelecionado.borders) {
         let url = "https://restcountries.com/v2/alpha/" + codigoPais + filtros;
         axios.get(url).then(resposta => {
           paisesVizinhos.push(resposta.data);
