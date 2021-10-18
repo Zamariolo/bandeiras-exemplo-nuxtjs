@@ -168,7 +168,7 @@ export default {
 
       // Retorna os dados para o parent
       this.$emit("retornandoPaisesFiltrados", this.paisesFiltrados);
-    },
+    }
   },
 
   async created() {
@@ -177,40 +177,38 @@ export default {
     let url =
       "https://restcountries.com/v2/all?fields=name,capital,languages,callingCodes,alpha3Code,translations";
 
-    await axios.get(url).then(response => {
-      let resposta = response.data;
+    let resposta = (await axios.get(url)).data;
 
-      // Todas capitais
-      this.todasCapitais = resposta
-        .map(pais => pais.capital)
-        .filter(item => item)
-        .sort();
+    // Todas capitais
+    this.todasCapitais = resposta
+      .map(pais => pais.capital)
+      .filter(item => item)
+      .sort();
 
-      // Todos codigos de ligacao
-      let codigosLigacao = resposta
-        .map(pais => pais.callingCodes)
-        .flat()
-        .filter(item => item)
-        .sort();
-      this.todosCodigosLigacao = [...new Set(codigosLigacao)];
+    // Todos codigos de ligacao
+    let codigosLigacao = resposta
+      .map(pais => pais.callingCodes)
+      .flat()
+      .filter(item => item)
+      .sort();
+    this.todosCodigosLigacao = [...new Set(codigosLigacao)];
 
-      // Todos idiomas (array of objects -> contendo nome e codigo de busca)
-      let obj_idiomas = resposta.map(pais => pais.languages).flat();
-      // Removendo duplicatas
-      this.todosIdiomas = [
-        ...new Map(obj_idiomas.map(item => [item.iso639_1, item])).values()
-      ];
+    // Todos idiomas (array of objects -> contendo nome e codigo de busca)
+    let obj_idiomas = resposta.map(pais => pais.languages).flat();
+    // Removendo duplicatas
+    this.todosIdiomas = [
+      ...new Map(obj_idiomas.map(item => [item.iso639_1, item])).values()
+    ];
 
-      // Todos paises (array of objects  -> contendo nome ptbr e codigo de busca)
-      let list_nomePaises = resposta.map(pais => pais.translations.pt).flat();
-      let list_alpha3code = resposta.map(pais => pais.alpha3Code).flat();
-      for (let i of Array(list_nomePaises.length).keys()) {
-        this.todosPaises.push({
-          name: list_nomePaises[i],
-          code: list_alpha3code[i]
-        });
-      }
-    });
+    // Todos paises (array of objects  -> contendo nome ptbr e codigo de busca)
+    let list_nomePaises = resposta.map(pais => pais.translations.pt).flat();
+    let list_alpha3code = resposta.map(pais => pais.alpha3Code).flat();
+    for (let i of Array(list_nomePaises.length).keys()) {
+      this.todosPaises.push({
+        name: list_nomePaises[i],
+        code: list_alpha3code[i]
+      });
+    }
 
     // Ao inicializar, busca se existem dados de pesquisa salvos na store, se sim, os carrega
     if (this.$store.state.searchOptions.filtrarPor) {
