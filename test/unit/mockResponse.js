@@ -303,8 +303,5 @@ export const initialResponse = [
   }
 ];
 
-export const searchCountriesResponse = [
-  { name: "a", flag: "flag_a" },
-  { name: "b", flag: "flag_b" },
-  { name: "c", flag: "flag_c" }
-];
+export const searchCountriesResponse = [{"flag":"https://flagcdn.com/ao.svg","name":"Angola","alpha3Code":"AGO"},{"flag":"https://flagcdn.com/br.svg","name":"Brazil","alpha3Code":"BRA"},{"flag":"https://flagcdn.com/cv.svg","name":"Cabo Verde","alpha3Code":"CPV"},{"flag":"https://flagcdn.com/gq.svg","name":"Equatorial Guinea","alpha3Code":"GNQ"},{"flag":"https://flagcdn.com/gw.svg","name":"Guinea-Bissau","alpha3Code":"GNB"},{"flag":"https://flagcdn.com/mo.svg","name":"Macao","alpha3Code":"MAC"},{"flag":"https://flagcdn.com/mz.svg","name":"Mozambique","alpha3Code":"MOZ"},{"flag":"https://flagcdn.com/pt.svg","name":"Portugal","alpha3Code":"PRT"},{"flag":"https://flagcdn.com/st.svg","name":"Sao Tome and Principe","alpha3Code":"STP"},{"flag":"https://flagcdn.com/tl.svg","name":"Timor-Leste","alpha3Code":"TLS"}];
+

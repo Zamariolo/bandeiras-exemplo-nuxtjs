@@ -11,7 +11,7 @@
       fab
       class="btn_limpaBusca"
       v-show="itemQuantity"
-      v-on:click="limparResultados"
+      v-on:click.native="limparResultados"
       >Limpar</v-btn
     >
 

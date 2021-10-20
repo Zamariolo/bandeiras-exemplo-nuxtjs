@@ -8,8 +8,8 @@ import flushPromises from "flush-promises";
 //Componentes
 import BarraPesquisa from "@/components/BarraPesquisa/BarraPesquisa";
 
-//Resposta fake para inicializacao do componente
-import { initialResponse, searchCountriesResponse } from "./mockResponse";
+  //Resposta fake para inicializacao do componente
+  import { initialResponse, searchCountriesResponse } from "./mockResponse";
 let axiosMockResponse = initialResponse;
 jest.mock("axios");
 
