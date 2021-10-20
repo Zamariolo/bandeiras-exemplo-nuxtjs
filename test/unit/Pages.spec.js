@@ -122,8 +122,7 @@ describe("Carregamento e gerenciamento da exibicao", () => {
 describe("Mudança de paginas", () => {
   test("Envia a quantidade e o argumento correto ao abrir pagina", () => {
     const mockRouter = {
-      push: jest.fn(),
-      post: jest.fn()
+      push: jest.fn()
     };
 
     const wrapper = shallowMount(IndexPage, {

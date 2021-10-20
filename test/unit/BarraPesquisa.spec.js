@@ -8,8 +8,8 @@ import flushPromises from "flush-promises";
 //Componentes
 import BarraPesquisa from "@/components/BarraPesquisa/BarraPesquisa";
 
-  //Resposta fake para inicializacao do componente
-  import { initialResponse, searchCountriesResponse } from "./mockResponse";
+//Resposta fake para inicializacao do componente
+import { initialResponse, searchCountriesResponse } from "./mockResponse";
 let axiosMockResponse = initialResponse;
 jest.mock("axios");
 
@@ -46,7 +46,6 @@ beforeEach(() => {
 
 describe("Inicializando a barra de pesquisa", () => {
   test("Testa comportamento de mostra/esconde do autocomplete filtro", async () => {
-
     const wrapper = shallowMount(BarraPesquisa, { store, localVue });
     const filtro = wrapper.find("#autocomplete_filtro");
 
@@ -62,7 +61,6 @@ describe("Inicializando a barra de pesquisa", () => {
     expect(filtro.isVisible()).toBe(false);
   }),
     test("Verifica se o primeiro autocomplete possui os dados para popular", async () => {
-
       const wrapper = shallowMount(BarraPesquisa, { store, localVue });
       const autocomplete_tipoFiltro = wrapper.find("#autocomplete_tipoFiltro");
 
@@ -226,7 +224,6 @@ describe("Populando autocomplete filtro corretamente", () => {
 });
 
 describe("Funcionalidade pesquisar paises", () => {
-
   test("Pesquisa por região", async () => {
     const wrapper = shallowMount(BarraPesquisa, {
       store,
@@ -236,6 +233,9 @@ describe("Funcionalidade pesquisar paises", () => {
           tipoFiltroSelecionado: "Região",
           filtroSelecionado: "Europa"
         };
+      },
+      mocks: {
+        actions
       }
     });
 
@@ -258,16 +258,23 @@ describe("Funcionalidade pesquisar paises", () => {
     const btnPesquisarPaises = wrapper.find("#btnPesquisarPaises");
     await btnPesquisarPaises.trigger("click");
     await flushPromises();
-    await wrapper.vm.$nextTick();
 
+    // Verifica se a action que modifica a store foi chamada
+    expect(actions.saveSearchOptions).toHaveBeenCalledTimes(1);
 
-    // Verifica se a funcao que modifica a store foi chamada
-    //expect(actions.saveSearchOptions).toHaveBeenCalled();
-    //expect(actions.saveSearchOptions).toBeCalledWith({ a: "oi" });
+    const argEsperado = {
+      filtrarPor: wrapper.vm.tipoFiltroSelecionado,
+      filtro: wrapper.vm.filtroSelecionado,
+      loadedCountries: wrapper.vm.paisesFiltrados
+    };
+    //expect(actions.saveSearchOptions).toBeCalledWith(argEsperado);
+    expect(actions.saveSearchOptions.mock.calls[0][1]).toEqual(argEsperado);
 
     // Verifica se os dados corretos foram enviados para serem exibidos na pagina
-    expect(wrapper.emitted().retornandoPaisesFiltrados.length).toBe(1) // Verifica que o evento foi chamado apenas uma vez
-    expect(wrapper.emitted('retornandoPaisesFiltrados')[0][0]).toEqual(axiosMockResponse) //Verifica o payload do emitted
+    expect(wrapper.emitted().retornandoPaisesFiltrados.length).toBe(1); // Verifica que o evento foi chamado apenas uma vez
+    expect(wrapper.emitted("retornandoPaisesFiltrados")[0][0]).toEqual(
+      axiosMockResponse
+    ); //Verifica o payload do emitted
   }),
     test.skip("Pesquisa por Capital", async () => {
       const wrapper = shallowMount(BarraPesquisa, {
@@ -313,5 +320,5 @@ describe("Funcionalidade pesquisar paises", () => {
       expect(store.state.searchOptions.filtro).toEqual(
         wrapper.vm.filtroSelecionado
       );
-    })
+    });
 });
