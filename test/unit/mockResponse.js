@@ -302,3 +302,9 @@ export const initialResponse = [
     capital: "Buenos Aires"
   }
 ];
+
+export const searchCountriesResponse = [
+  { name: "a", flag: "flag_a" },
+  { name: "b", flag: "flag_b" },
+  { name: "c", flag: "flag_c" }
+];

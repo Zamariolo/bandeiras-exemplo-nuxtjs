@@ -41,10 +41,11 @@
           block
           color="#6D2080"
           class="btn-pesquisar"
+          id='btnPesquisarPaises'
           large
           rounded
           :disabled="!filtroSelecionado"
-          @click="pesquisarPaises()"
+          @click.native="pesquisarPaises()"
           >Pesquisar</v-btn
         >
       </v-col>
@@ -102,6 +103,7 @@ export default {
 
   methods: {
     async pesquisarPaises() {
+
       // Descr: Acoes executadas apos o clique do botao pesquisar
 
       // Se tudo estiver ok
