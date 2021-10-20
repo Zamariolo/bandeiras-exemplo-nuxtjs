@@ -32,7 +32,7 @@ beforeEach(() => {
 
   actions = {
     saveSearchOptions: jest.fn(() => {
-      console.log("Dentro do dispatch");
+      let x = 2+2;
     })
   };
   store = new Vuex.Store({
@@ -224,65 +224,38 @@ describe("Populando autocomplete filtro corretamente", () => {
 });
 
 describe("Funcionalidade pesquisar paises", () => {
-  test("Pesquisa por região", async () => {
-    const wrapper = shallowMount(BarraPesquisa, {
-      store,
-      localVue,
-      data() {
-        return {
-          tipoFiltroSelecionado: "Região",
-          filtroSelecionado: "Europa"
-        };
-      },
-      mocks: {
-        actions
-      }
-    });
+  //vuex store mocked
+  store = new Vuex.Store({
+    actions,
+    state
+  });
 
-    await flushPromises();
+  test("Pesquisa por todos os tipos de filtro optando pelo item do meio no autocomplete 2", async () => {
+    const todosFiltros = [
+      "Região",
+      "Capital",
+      "Língua",
+      "Código de ligação",
+      "País"
+    ];
 
-    const autocomplete_tipoFiltro = wrapper.find("#autocomplete_tipoFiltro");
-    const autocomplete_filtro = wrapper.find("#autocomplete_filtro");
+    let aux = 0;
 
-    //Confere se o carregamento dos dados iniciais funcionou
-    expect(autocomplete_tipoFiltro.vm.value).toEqual(
-      wrapper.vm.tipoFiltroSelecionado
-    );
-    expect(autocomplete_filtro.vm.value).toEqual(wrapper.vm.filtroSelecionado);
+    for (let tipoFiltro of todosFiltros) {
+      aux++;
 
-    // Altera a resposta do axios mockada
-    axiosMockResponse = searchCountriesResponse;
-    axios.get.mockResolvedValue({ data: axiosMockResponse });
+      // Altera a resposta do axios mockada
+      axiosMockResponse = initialResponse;
+      axios.get.mockResolvedValue({ data: axiosMockResponse });
 
-    // Aciona o botao de pesquisar
-    const btnPesquisarPaises = wrapper.find("#btnPesquisarPaises");
-    await btnPesquisarPaises.trigger("click");
-    await flushPromises();
+      await flushPromises();
 
-    // Verifica se a action que modifica a store foi chamada
-    expect(actions.saveSearchOptions).toHaveBeenCalledTimes(1);
-
-    const argEsperado = {
-      filtrarPor: wrapper.vm.tipoFiltroSelecionado,
-      filtro: wrapper.vm.filtroSelecionado,
-      loadedCountries: wrapper.vm.paisesFiltrados
-    };
-    //expect(actions.saveSearchOptions).toBeCalledWith(argEsperado);
-    expect(actions.saveSearchOptions.mock.calls[0][1]).toEqual(argEsperado);
-
-    // Verifica se os dados corretos foram enviados para serem exibidos na pagina
-    expect(wrapper.emitted().retornandoPaisesFiltrados.length).toBe(1); // Verifica que o evento foi chamado apenas uma vez
-    expect(wrapper.emitted("retornandoPaisesFiltrados")[0][0]).toEqual(
-      axiosMockResponse
-    ); //Verifica o payload do emitted
-  }),
-    test.skip("Pesquisa por Capital", async () => {
       const wrapper = shallowMount(BarraPesquisa, {
         store,
         localVue,
         data() {
           return {
-            tipoFiltroSelecionado: "Capital"
+            tipoFiltroSelecionado: tipoFiltro
           };
         }
       });
@@ -292,9 +265,11 @@ describe("Funcionalidade pesquisar paises", () => {
       const autocomplete_tipoFiltro = wrapper.find("#autocomplete_tipoFiltro");
       const autocomplete_filtro = wrapper.find("#autocomplete_filtro");
 
-      // Preenche autocomplete filtro com o item do meio da lista
+      // Popula autocomplete filtro com item do meio da lista de itens
       wrapper.vm.filtroSelecionado =
-        autocomplete_filtro.vm.items[autocomplete_filtro.vm.items.length / 2];
+        autocomplete_filtro.vm.items[
+          Math.ceil(autocomplete_filtro.vm.items.length / 2)
+        ];
       await wrapper.vm.$nextTick();
 
       //Confere se o carregamento dos dados iniciais funcionou
@@ -305,20 +280,38 @@ describe("Funcionalidade pesquisar paises", () => {
         wrapper.vm.filtroSelecionado
       );
 
+      // Altera a resposta do axios mockada
+      axiosMockResponse = searchCountriesResponse;
+      axios.get.mockResolvedValue({ data: axiosMockResponse });
+
       // Aciona o botao de pesquisar
       const btnPesquisarPaises = wrapper.find("#btnPesquisarPaises");
       await btnPesquisarPaises.trigger("click");
+      await flushPromises();
 
-      // Verifica se a funcao que modifica a store foi chamada
-      //expect(actions.actionInput).toHaveBeenCalled()
-      expect(actions.saveSearchOptions).toHaveBeenCalled();
+      // Verifica se a action que modifica a store foi chamada
+      expect(actions.saveSearchOptions).toHaveBeenCalledTimes(aux);
 
-      // Verifica se a Store foi modificada
-      expect(store.state.searchOptions.filtrarPor).toEqual(
-        wrapper.vm.tipoFiltroSelecionado
+      const argEsperado = {
+        filtrarPor: wrapper.vm.tipoFiltroSelecionado,
+        filtro: wrapper.vm.filtroSelecionado,
+        loadedCountries: wrapper.vm.paisesFiltrados
+      };
+      //expect(actions.saveSearchOptions).toBeCalledWith(argEsperado);
+      expect(actions.saveSearchOptions.mock.calls[aux - 1][1]).toEqual(
+        argEsperado
       );
-      expect(store.state.searchOptions.filtro).toEqual(
-        wrapper.vm.filtroSelecionado
-      );
-    });
+
+      // Verifica se os dados corretos foram enviados para serem exibidos na pagina
+      expect(wrapper.emitted().retornandoPaisesFiltrados.length).toBe(1); // Verifica que o evento foi chamado apenas uma vez
+
+      if (tipoFiltro == "País") {
+      expect(wrapper.emitted('retornandoPaisesFiltrados')[0][0][0][0]).toEqual(axiosMockResponse[0])
+      } else {
+        expect(wrapper.emitted("retornandoPaisesFiltrados")[0][0]).toEqual(
+          axiosMockResponse
+        ); //Verifica o payload do emitted
+      }
+    }
+  });
 });

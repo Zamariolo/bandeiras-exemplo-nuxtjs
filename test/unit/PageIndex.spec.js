@@ -41,8 +41,6 @@ beforeEach(() => {
 describe("Carregamento e gerenciamento da exibicao", () => {
   test("Recebe paises filtrados do componente barra de pesquisa", async () => {
     const wrapper = shallowMount(IndexPage, {
-      store,
-      localVue,
       data() {
         return {
           perPage: 5
@@ -66,8 +64,6 @@ describe("Carregamento e gerenciamento da exibicao", () => {
       let itensPorPagina = 4;
 
       const wrapper = shallowMount(IndexPage, {
-        store,
-        localVue,
         data() {
           return {
             perPage: itensPorPagina,
@@ -101,8 +97,6 @@ describe("Carregamento e gerenciamento da exibicao", () => {
     }),
     test("Limpa resultados - limpa todos os paises exibidos", async () => {
       const wrapper = shallowMount(IndexPage, {
-        store,
-        localVue,
         data() {
           return {
             paisesFiltrados: searchCountriesResponse
@@ -126,8 +120,6 @@ describe("Mudança de paginas", () => {
     };
 
     const wrapper = shallowMount(IndexPage, {
-      store,
-      localVue,
       mocks: {
         $router: mockRouter
       }
