@@ -8,7 +8,7 @@ import Vuetify from "vuetify";
 //Componentes
 import IndexPage from "@/pages/index.vue";
 //Resposta fake para popularComponente
-import { searchCountriesResponse } from "./mockResponse";
+import { searchCountriesResponse } from "./mockResponses/mockResponse";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);

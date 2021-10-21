@@ -109,7 +109,7 @@ export default {
     };
   },
 
-  created() {
+  async created() {
     // Recebe o codigo do pais selecionado pela url
     this.paisApresentado = this.$route.params.pid;
     // Carrega as informacoes do pais selecionado
@@ -117,33 +117,32 @@ export default {
       "?fields=flag,name,capital,region,subregion,population,languages,borders,translations";
     let url =
       "https://restcountries.com/v2/alpha/" + this.paisApresentado + filtros;
-    axios.get(url).then(resposta => {
-      this.dadosPaisSelecionado = resposta.data;
+    let resposta = await axios.get(url);
 
-      // Carregando as informacoes dos paises vizinhos para exibicao
-      filtros = "?fields=flag,alpha3Code,name";
-      let paisesVizinhos = [];
+    this.dadosPaisSelecionado = resposta.data;
 
-      for (let codigoPais of this.dadosPaisSelecionado.borders) {
-        let url = "https://restcountries.com/v2/alpha/" + codigoPais + filtros;
-        axios.get(url).then(resposta => {
-          paisesVizinhos.push(resposta.data);
-          this.dadosPaisesVizinhos = paisesVizinhos;
-        });
-      }
+    // Carregando as informacoes dos paises vizinhos para exibicao
+    filtros = "?fields=flag,alpha3Code,name";
+    let paisesVizinhos = [];
 
-      // Gerando os idiomas em formato de texto
-      let list_idiomas = this.dadosPaisSelecionado.languages.map(
-        a => a.nativeName
-      );
-      let string_idiomas = list_idiomas.join(", ");
-      this.dadosPaisSelecionado["idioma"] = string_idiomas;
+    for (let codigoPais of this.dadosPaisSelecionado.borders) {
+      let url = "https://restcountries.com/v2/alpha/" + codigoPais + filtros;
+      resposta = await axios.get(url);
+      paisesVizinhos.push(resposta.data);
+      this.dadosPaisesVizinhos = paisesVizinhos;
+    }
 
-      // Gerando a informacao de populacao com separador de milhares
-      this.dadosPaisSelecionado["populacao_separador"] = parseFloat(
-        this.dadosPaisSelecionado.population
-      ).toLocaleString("en");
-    });
+    // Gerando os idiomas em formato de texto
+    let list_idiomas = this.dadosPaisSelecionado.languages.map(
+      a => a.nativeName
+    );
+    let string_idiomas = list_idiomas.join(", ");
+    this.dadosPaisSelecionado["idioma"] = string_idiomas;
+
+    // Gerando a informacao de populacao com separador de milhares
+    this.dadosPaisSelecionado["populacao_separador"] = parseFloat(
+      this.dadosPaisSelecionado.population
+    ).toLocaleString("en");
   },
 
   methods: {

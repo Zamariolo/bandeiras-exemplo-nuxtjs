@@ -9,7 +9,10 @@ import flushPromises from "flush-promises";
 import BarraPesquisa from "@/components/BarraPesquisa/BarraPesquisa";
 
 //Resposta fake para inicializacao do componente
-import { initialResponse, searchCountriesResponse } from "./mockResponse";
+import {
+  initialResponse,
+  searchCountriesResponse
+} from "./mockResponses/mockResponse";
 let axiosMockResponse = initialResponse;
 jest.mock("axios");
 
@@ -32,7 +35,7 @@ beforeEach(() => {
 
   actions = {
     saveSearchOptions: jest.fn(() => {
-      let x = 2+2;
+      let x = 2 + 2;
     })
   };
   store = new Vuex.Store({
@@ -306,7 +309,9 @@ describe("Funcionalidade pesquisar paises", () => {
       expect(wrapper.emitted().retornandoPaisesFiltrados.length).toBe(1); // Verifica que o evento foi chamado apenas uma vez
 
       if (tipoFiltro == "País") {
-      expect(wrapper.emitted('retornandoPaisesFiltrados')[0][0][0][0]).toEqual(axiosMockResponse[0])
+        expect(
+          wrapper.emitted("retornandoPaisesFiltrados")[0][0][0][0]
+        ).toEqual(axiosMockResponse[0]);
       } else {
         expect(wrapper.emitted("retornandoPaisesFiltrados")[0][0]).toEqual(
           axiosMockResponse
